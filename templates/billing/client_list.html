@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Clients</h2>
+
+<ul>
+{% for client in clients %}
+    <li>
+        {{ client.name }}
+        <a href="{% url 'client_update' client.id %}">Edit</a>
+        <a href="{% url 'client_delete' client.id %}">Delete</a>
+    </li>
+{% endfor %}
+</ul>
+
+<a href="{% url 'client_create' %}">Add Client</a>
+
+{% endblock %}

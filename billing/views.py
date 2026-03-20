@@ -1,0 +1,202 @@
+from django.shortcuts import render, redirect ,get_object_or_404
+from django.contrib.auth.decorators import login_required
+from .models import Client, Invoice, InvoiceItem
+from .forms import ClientForm, InvoiceForm, InvoiceItemForm
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
+
+
+def register(request):
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect("dashboard")
+    else:
+        form = UserCreationForm()
+
+    return render(request, "billing/register.html", {"form": form})
+
+
+def home(request):
+    return render(request, 'billing/home.html')
+
+
+@login_required
+def client_list(request):
+    clients = Client.objects.filter(user=request.user)
+    return render(request, "billing/client_list.html", {"clients": clients})
+    
+
+
+@login_required
+def client_create(request):
+    if request.method == "POST":
+        form = ClientForm(request.POST)
+        if form.is_valid():
+            client = form.save(commit=False)
+            client.user = request.user
+            client.save()
+            return redirect("client_list")
+    else:
+        form = ClientForm()
+    return render(request, "billing/client_form.html", {"form": form})
+
+
+@login_required
+def client_update(request, pk):
+    client = get_object_or_404(Client, pk=pk, user = request.user)
+    if request.method == "POST":
+        form = ClientForm(request.POST, instance=client)
+        if form.is_valid():
+            form.save()
+            return redirect("client_list")
+    else:
+        form = ClientForm(instance=client)
+    
+    return render(request, "billing/client_form.html", {"form": form})
+
+
+@login_required
+def client_delete(request, pk):
+    client = get_object_or_404(Client, pk= pk, user=request.user)
+
+    if request.method == "POST":
+        client.delete()
+        return redirect("client_list")
+    
+    return render(request, "billing/client_confirm_delete.html", {"client": client})
+
+
+
+@login_required
+def invoice_list(request):
+    invoices = Invoice.objects.filter(user=request.user)
+    return render(request, "billing/invoice_list.html", {"invoices": invoices})
+
+
+@login_required
+def invoice_create(request):
+    if request.method == "POST":
+        form = InvoiceForm(request.POST, user=request.user)
+        if form.is_valid():
+            invoice = form.save(commit=False)
+            invoice.user = request.user
+            invoice.save()
+            return redirect("invoice_list")
+    
+    else:
+        form = InvoiceForm(user=request.user)
+    
+    return render(request, "billing/invoice_form.html", {"form": form})
+
+
+@login_required
+def invoice_detail(request, pk):
+    invoice = get_object_or_404(Invoice, pk=pk, user=request.user)
+    items = invoice.items.all
+
+    return render(request, "billing/invoice_detail.html", {
+        "invoice": invoice,
+        "items": items,
+    })
+
+
+@login_required
+def item_create(request, invoice_id):
+    invoice = get_object_or_404(Invoice, pk=invoice_id, user=request.user)
+
+    if request.method == "POST":
+        form = InvoiceItemForm(request.POST)
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.invoice = invoice
+            item.save()
+            return redirect("invoice_detail", pk=invoice.id)
+    
+    else:
+        form = InvoiceItemForm()
+
+    return render(request, "billing/item_form.html", {"form": form})
+
+
+@login_required
+def dashboard(request):
+    invoices = Invoice.objects.filter(user=request.user)
+    
+    unpaid_total = sum(i.total() for i in invoices if i.status == 'UNPAID')
+    paid_total = sum(i.total() for i in invoices if i.status == 'PAID')
+
+    recent_invoices= invoices.order_by("-created_at")[:5]
+    
+    return render(request, "billing/dashboard.html",{
+        "unpaid_total": unpaid_total,
+        "paid_total": paid_total,
+        "recent_invoices": recent_invoices
+    })
+
+
+@login_required
+def invoice_list(request):
+    invoices = Invoice.objects.filter(user=request.user)
+
+    status = request.GET.get("status")
+
+    if status:
+        invoices = invoices.filter(status=status)
+
+    return render(request, "billing/invoice_list.html", {"invoices": invoices})
+
+
+@login_required
+def invoice_update(request, pk):
+    invoice = get_object_or_404(Invoice,pk=pk, user = request.user)
+
+    if request.method == "POST":
+        form = InvoiceForm(request.POST, instance=invoice, user=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect("invoice_detail", pk=invoice.id)
+    
+    else:
+        form = InvoiceForm(instance=invoice, user=request.user)
+    
+    return render(request, "billing/invoice_form.html", {"form": form})
+
+    
+@login_required
+def invoice_delete(request, pk):
+    invoice =get_object_or_404(Invoice, pk=pk, user=request.user)
+
+    if request.method == "POST":
+        invoice.delete()
+        return redirect("invoice_list")
+    
+    return render(request, "billing/invoice_confirm_delete.html", {"invoice": invoice})
+
+
+@login_required
+def item_update(request, pk):
+    item = get_object_or_404(InvoiceItem, pk=pk, invoice__user=request.user)
+
+    if request.method == "POST":
+        form = InvoiceItemForm(request.POST, instance=item)
+        if form.is_valid():
+            form.save()
+            return redirect("invoice_detail", pk=item.invoice.id)
+    else:
+        form = InvoiceItemForm(instance=item)
+
+    return render(request, "billing/item_form.html", {"form": form})
+
+@login_required
+def item_delete(request, pk):
+    item = get_object_or_404(InvoiceItem, pk=pk, invoice__user=request.user)
+
+    if request.method == "POST":
+        invoice_id = item.invoice.id
+        item.delete()
+        return redirect("invoice_detail", pk=invoice_id)
+
+    return render(request, "billing/item_confirm_delete.html", {"item": item})

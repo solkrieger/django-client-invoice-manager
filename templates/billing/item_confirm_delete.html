@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Delete Item</h2>
+
+<p>Delete "{{ item.description }}"?</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">Delete</button>
+</form>
+
+<a href="{% url 'invoice_detail' item.invoice.id %}">Cancel</a>
+
+{% endblock %}

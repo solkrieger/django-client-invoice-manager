@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Dashboard</h2>
+
+<p>Unpaid Total: {{ unpaid_total }}</p>
+<p>Paid Total: {{ paid_total }}</p>
+
+<h3>Recent Invoices</h3>
+
+<ul>
+{% for invoice in recent_invoices %}
+<li>
+<a href="{% url 'invoice_detail' invoice.id %}">
+Invoice {{ invoice.id }}
+</a>
+</li>
+{% endfor %}
+</ul>
+<form action="{% url 'logout' %}" method="post">
+    {% csrf_token %}
+    <button type="submit">Logout</button>
+</form>
+
+{% endblock %}
