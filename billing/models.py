@@ -15,11 +15,15 @@ class Client(models.Model):
 
 
 class Invoice(models.Model):
+    STATUS_CHOICES = [
+    ("PAID", "Paid"),
+    ("UNPAID", "Unpaid"),
+    ]
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     client = models.ForeignKey(Client, on_delete=models.CASCADE) 
     issue_date = models.DateField()
     due_date = models.DateField()
-    status = models.CharField(max_length=20)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

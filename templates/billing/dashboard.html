@@ -2,25 +2,43 @@
 
 {% block content %}
 
-<h2>Dashboard</h2>
+<h2 class="mb-4">Dashboard</h2>
 
-<p>Unpaid Total: {{ unpaid_total }}</p>
-<p>Paid Total: {{ paid_total }}</p>
+<!-- Stats -->
+<div class="row mb-4">
+  <div class="col-md-6">
+    <div class="card text-bg-warning mb-3">
+      <div class="card-body">
+        <h5 class="card-title">Unpaid Total</h5>
+        <p class="card-text">{{ unpaid_total }}</p>
+      </div>
+    </div>
+  </div>
 
-<h3>Recent Invoices</h3>
+  <div class="col-md-6">
+    <div class="card text-bg-success mb-3">
+      <div class="card-body">
+        <h5 class="card-title">Paid Total</h5>
+        <p class="card-text">{{ paid_total }}</p>
+      </div>
+    </div>
+  </div>
+</div>
 
-<ul>
+<!-- Recent invoices -->
+<h3 class="mb-3">Recent Invoices</h3>
+
+<ul class="list-group">
 {% for invoice in recent_invoices %}
-<li>
-<a href="{% url 'invoice_detail' invoice.id %}">
-Invoice {{ invoice.id }}
-</a>
-</li>
+  <li class="list-group-item d-flex justify-content-between">
+    <a href="{% url 'invoice_detail' invoice.id %}">
+      Invoice {{ invoice.id }}
+    </a>
+    <span>{{ invoice.get_status_display }}</span>
+  </li>
+{% empty %}
+  <li class="list-group-item">No invoices yet.</li>
 {% endfor %}
 </ul>
-<form action="{% url 'logout' %}" method="post">
-    {% csrf_token %}
-    <button type="submit">Logout</button>
-</form>
 
 {% endblock %}

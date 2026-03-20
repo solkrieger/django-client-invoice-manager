@@ -2,19 +2,26 @@
 
 {% block content %}
 
-<h2>Invoices</h2>
+<h2 class="mb-3">Invoices</h2>
 
-<ul>
+<a class="btn btn-primary mb-3" href="{% url 'invoice_create' %}">Add Invoice</a>
+
+<div class="mb-3">
+  <a class="btn btn-secondary btn-sm" href="/invoices/">All</a>
+  <a class="btn btn-success btn-sm" href="/invoices/?status=PAID">Paid</a>
+  <a class="btn btn-warning btn-sm" href="/invoices/?status=UNPAID">Unpaid</a>
+</div>
+
+<ul class="list-group">
 {% for invoice in invoices %}
-<li>
+  <li class="list-group-item">
     <a href="{% url 'invoice_detail' invoice.id %}">
-        Invoice {{ invoice.id }}
+      Invoice {{ invoice.id }}
     </a>
-</li>
+  </li>
+{% empty %}
+  <li class="list-group-item">No invoices yet.</li>
 {% endfor %}
 </ul>
-<a href="/invoices/">All</a>
-<a href="/invoices/?status=PAID">Paid</a>
-<a href="/invoices/?status=UNPAID">Unpaid</a>
 
 {% endblock %}

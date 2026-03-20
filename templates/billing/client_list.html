@@ -2,18 +2,23 @@
 
 {% block content %}
 
-<h2>Clients</h2>
+<h2 class="mb-3">Clients</h2>
 
-<ul>
+<a class="btn btn-primary mb-3" href="{% url 'client_create' %}">Add Client</a>
+
+<ul class="list-group">
 {% for client in clients %}
-    <li>
-        {{ client.name }}
-        <a href="{% url 'client_update' client.id %}">Edit</a>
-        <a href="{% url 'client_delete' client.id %}">Delete</a>
-    </li>
+  <li class="list-group-item d-flex justify-content-between align-items-center">
+    {{ client.name }}
+
+    <div>
+      <a class="btn btn-warning btn-sm" href="{% url 'client_update' client.id %}">Edit</a>
+      <a class="btn btn-danger btn-sm" href="{% url 'client_delete' client.id %}">Delete</a>
+    </div>
+  </li>
+{% empty %}
+  <li class="list-group-item">No clients yet.</li>
 {% endfor %}
 </ul>
-
-<a href="{% url 'client_create' %}">Add Client</a>
 
 {% endblock %}

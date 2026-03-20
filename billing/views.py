@@ -4,6 +4,7 @@ from .models import Client, Invoice, InvoiceItem
 from .forms import ClientForm, InvoiceForm, InvoiceItemForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
+from django.contrib import messages
 
 
 def register(request):
@@ -38,6 +39,7 @@ def client_create(request):
             client = form.save(commit=False)
             client.user = request.user
             client.save()
+            messages.success(request, "Client created successfully.")
             return redirect("client_list")
     else:
         form = ClientForm()
@@ -51,6 +53,7 @@ def client_update(request, pk):
         form = ClientForm(request.POST, instance=client)
         if form.is_valid():
             form.save()
+            messages.success(request, "Client updated successfully.")
             return redirect("client_list")
     else:
         form = ClientForm(instance=client)
@@ -64,6 +67,7 @@ def client_delete(request, pk):
 
     if request.method == "POST":
         client.delete()
+        messages.success(request, "Client deleted successfully.")
         return redirect("client_list")
     
     return render(request, "billing/client_confirm_delete.html", {"client": client})
@@ -84,6 +88,7 @@ def invoice_create(request):
             invoice = form.save(commit=False)
             invoice.user = request.user
             invoice.save()
+            messages.success(request, "Invoice created successfully.")
             return redirect("invoice_list")
     
     else:
@@ -113,6 +118,7 @@ def item_create(request, invoice_id):
             item = form.save(commit=False)
             item.invoice = invoice
             item.save()
+            messages.success(request, "Item created successfully.")
             return redirect("invoice_detail", pk=invoice.id)
     
     else:
@@ -157,6 +163,7 @@ def invoice_update(request, pk):
         form = InvoiceForm(request.POST, instance=invoice, user=request.user)
         if form.is_valid():
             form.save()
+            messages.success(request, "Invoice updated successfully.")
             return redirect("invoice_detail", pk=invoice.id)
     
     else:
@@ -171,6 +178,7 @@ def invoice_delete(request, pk):
 
     if request.method == "POST":
         invoice.delete()
+        messages.success(request, "Invoice deleted successfully.")
         return redirect("invoice_list")
     
     return render(request, "billing/invoice_confirm_delete.html", {"invoice": invoice})
@@ -184,6 +192,7 @@ def item_update(request, pk):
         form = InvoiceItemForm(request.POST, instance=item)
         if form.is_valid():
             form.save()
+            messages.success(request, "Item updated successfully.")
             return redirect("invoice_detail", pk=item.invoice.id)
     else:
         form = InvoiceItemForm(instance=item)
@@ -197,6 +206,7 @@ def item_delete(request, pk):
     if request.method == "POST":
         invoice_id = item.invoice.id
         item.delete()
+        messages.success(request, "Item deleted successfully.")
         return redirect("invoice_detail", pk=invoice_id)
 
     return render(request, "billing/item_confirm_delete.html", {"item": item})
