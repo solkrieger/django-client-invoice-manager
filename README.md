@@ -1,40 +1,38 @@
 Django Client & Invoice Manager
-
-A full-stack Django web application for managing clients, invoices, and invoice items with authentication, dashboard metrics, and secure multi-user data isolation.
+A production-ready Django web application for managing clients, invoices, and invoice items with authentication, PDF export, REST API, and PostgreSQL deployment.
 
 🚀 Features
-
-User authentication (register, login, logout)
-Client management (CRUD)
-Invoice management (CRUD)
-Invoice item management (CRUD)
-Automatic invoice total calculation
-Dashboard with:
-Paid / unpaid totals
-Recent invoices
-Invoice filtering (status)
-Secure user data isolation
-Custom 404 page
-Bootstrap-based UI
-Deployed on Render
+🔐 User authentication (register, login, logout)
+👥 Client management (CRUD)
+🧾 Invoice management (CRUD)
+📦 Invoice item management
+🧮 Automatic total calculation
+📊 Dashboard with paid/unpaid metrics
+🔍 Invoice filtering by status
+📄 PDF invoice export
+🔌 REST API (Django REST Framework)
+🛡 User data isolation (secure per user)
+🎨 Bootstrap UI
+⚠️ Custom 404 page
+☁️ Deployed on Render with PostgreSQL
 
 🛠 Tech Stack
-
 Python 3
 Django
-PostgreSQL (production)
+Django REST Framework
+PostgreSQL
 SQLite (development)
-Bootstrap
+Bootstrap 5
 Gunicorn
-Render (deployment)
+Render
 
 🔐 Security
-
-All data scoped to authenticated user
-Object-level access checks
+Authenticated access required for all data
+Object-level permission checks (user=request.user)
 CSRF protection enabled
-No secrets stored in code (env variables)
-⚙️ Setup (Local)
+Environment variables for secrets
+
+⚙️ Local Setup
 git clone https://github.com/solkrieger/django-client-invoice-manager.git
 cd django-client-invoice-manager
 
@@ -47,34 +45,33 @@ python manage.py migrate
 python manage.py runserver
 
 🌍 Environment Variables
+Create .env:
 
-Create a .env file:
 DJANGO_SECRET_KEY=your-secret-key
 DJANGO_DEBUG=True
 
-📊 Usage
-Register a new account
-Create clients
-Create invoices
-Add invoice items
-View totals and dashboard metrics
-
 🌐 Live Demo
-
 👉 https://invoice-manager-ivqa.onrender.com/
 
-📌 Future Improvements
 
-Export invoice as PDF
-REST API (Django REST Framework)
-AI invoice item description generator
+🔌 API Endpoints
+/api/clients/
+/api/invoices/
+
+📌 Future Improvements
+PDF styling enhancements
 Advanced filtering (date range, client)
+JWT authentication
+Invoice email sending
+
 🧠 What I Learned
 Django architecture (models, views, templates)
-Authentication and permissions
-Querysets and relationships
-Deployment with PostgreSQL
+Database relationships & querysets
+Authentication & permissions
+Building REST APIs
+Generating PDFs
+Deploying with PostgreSQL
 Debugging production issues
 📄 License
+This project is for educational and portfolio use.
 
-This project is for educational and portfolio purposes.
