@@ -228,24 +228,29 @@ def invoice_pdf(request, pk):
     p = canvas.Canvas(response)
     
     y = 800
+    p.setFont("Helvetica-Bold", 16)
     p.drawString(100, y, f"Invoice #{invoice.id}")
-    y -= 30
-
-    p.drawString(100, y, f"Client: {invoice.client.name}")
-    y -= 30
-
-    p.drawString(100, y, f"Status: {invoice.status}")
     y -= 40
 
+    p.setFont("Helvetica", 12)
+    p.drawString(100, y, f"Client: {invoice.client.name}")
+    y -= 20
+    p.drawString(100, y, f"Status: {invoice.get_status_display()}")
+    y -= 30
+
+    p.setFont("Helvetica-Bold", 12)
+    p.drawString(100, y, "Items:")
+    y -= 20
+
+    p.setFont("Helvetica", 11)
+
     for item in items:
-        p.drawString(
-            100,
-            y,
-            f"{item.description} - {item.quantity} x {item.price} = {item.total}"
-        )
-        y -= 20
+        line = f"{item.description} - {item.quantity} x {item.price} = {item.total}"
+        p.drawString(100, y, line)
+        y -= 18
 
     y -= 20
+    p.setFont("Helvetica-Bold", 12)
     p.drawString(100, y, f"Total: {invoice.total()}")
 
     p.showPage()
