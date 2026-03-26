@@ -7,7 +7,10 @@ from django.contrib.auth import login
 from django.contrib import messages
 from reportlab.pdfgen import canvas
 from django.http import HttpResponse
-
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
+from .serializers import ClientSerializer, InvoiceSerializer
 
 def register(request):
     if request.method == "POST":
@@ -249,3 +252,20 @@ def invoice_pdf(request, pk):
     p.save()
 
     return response
+
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def api_clients(request):
+    clients = Client.objects.filter(user=request.user)
+    serializer = ClientSerializer(clients, many= True)
+    return Response(serializer.data)
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def api_invoices(request):
+    invoices = Invoice.objects.filter(user=request.user)
+    serializer = InvoiceSerializer(invoices, many= True)
+    return Response(serializer.data)

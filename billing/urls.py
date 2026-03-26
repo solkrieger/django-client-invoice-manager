@@ -18,5 +18,7 @@ urlpatterns = [
     path("items/<int:pk>/edit/", views.item_update, name="item_update"),
     path("items/<int:pk>/delete/", views.item_delete, name="item_delete"),
     path("invoices/<int:pk>/pdf/", views.invoice_pdf, name="invoice_pdf"),
+    path("api/clients/", views.api_clients),
+    path("api/invoices/", views.api_invoices),
 
 ]
