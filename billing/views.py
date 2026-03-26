@@ -217,7 +217,7 @@ def item_delete(request, pk):
 @login_required
 def invoice_pdf(request, pk):
     invoice = get_object_or_404(Invoice, pk=pk, user=request.user)
-    items = invoice.invoiceitem_set.all()
+    items = invoice.items.all()
 
     response = HttpResponse(content_type="application/pdf")
     response["Content-Disposition"] = f'attachment; filename="invoice_{invoice.id}.pdf"'
