@@ -243,7 +243,7 @@ def invoice_pdf(request, pk):
         y -= 20
 
     y -= 20
-    p.drawString(100, y, f"Total: {invoice.total}")
+    p.drawString(100, y, f"Total: {invoice.total()}")
 
     p.showPage()
     p.save()
