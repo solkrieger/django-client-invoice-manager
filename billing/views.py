@@ -5,6 +5,8 @@ from .forms import ClientForm, InvoiceForm, InvoiceItemForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
 from django.contrib import messages
+from reportlab.pdfgen import canvas
+from django.http import HttpResponse
 
 
 def register(request):
@@ -210,3 +212,40 @@ def item_delete(request, pk):
         return redirect("invoice_detail", pk=invoice_id)
 
     return render(request, "billing/item_confirm_delete.html", {"item": item})
+
+
+@login_required
+def invoice_pdf(request, pk):
+    invoice = get_object_or_404(Invoice, pk=pk, user=request.user)
+    items = invoice.invoiceitem_set.all()
+
+    response = HttpResponse(content_type="application/pdf")
+    response["Content-Disposition"] = f'attachment; filename="invoice_{invoice.id}.pdf"'
+
+    p = canvas.Canvas(response)
+    
+    y = 800
+    p.drawString(100, y, f"Invoice #{invoice.id}")
+    y -= 30
+
+    p.drawString(100, y, f"Client: {invoice.client.name}")
+    y -= 30
+
+    p.drawString(100, y, f"Status: {invoice.status}")
+    y -= 40
+
+    for item in items:
+        p.drawString(
+            100,
+            y,
+            f"{item.description} - {item.quantity} x {item.price} = {item.total}"
+        )
+        y -= 20
+
+    y -= 20
+    p.drawString(100, y, f"Total: {invoice.total}")
+
+    p.showPage()
+    p.save()
+
+    return response

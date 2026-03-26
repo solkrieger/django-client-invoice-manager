@@ -36,5 +36,7 @@
 </ul>
 
 <h4>Total: {{ invoice.total }}</h4>
-
+<a class="btn btn-success btn-sm" href="{% url 'invoice_pdf' invoice.id %}">
+  Download PDF
+</a>
 {% endblock %}
